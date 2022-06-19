@@ -6,7 +6,7 @@
 
 #### 1.1. 상속을 통한 해결
 
-![](../img/strategy.duck.inheritance.png)
+![](./img/strategy.duck.inheritance.png)
 
 Duck 이라는 추상 클래스를 통해 모든 오리를 관리하고 있다.
 오리의 특징인 꽥꽥 소리를 내는 "quack()", 물에서 수영할 수 있는 "swim()" 메서드가 존재한다.
@@ -80,7 +80,7 @@ public class RubberDuck extends Duck {
 
 #### 1.2. 인터페이스를 통한 해결
 
-![](../img/strategy.duck.interfaces.png)
+![](./img/strategy.duck.interfaces.png)
 
 "fly()" 를 Duck 클래스에서 분리하여 Flyable 인터페이스에 작성했다.
 추가적으로 "quack()" 기능도 Quackable 인터페이스로 분리했다.
