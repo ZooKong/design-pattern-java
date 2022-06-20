@@ -114,3 +114,109 @@ public class MallardDuck extends Duck implements Quackable, Flyable {
 인터페이스를 통한 행위를 분리한 구조는 오리가 필요한 행위만을 구현하도록 해야 한다.
 그러나 오리 클래스가 30~40개 이상 존재한다면 각 개별적 오리 클래스서 필요로 하는 인터페이스만을 구현하는 것은 쉽지 않다.
 결국 코드 중복이 발생하고 코드의 재사용성이 떨어진다.
+
+#### 1.3. 전략 패턴을 통한 해결
+
+![](./img/strategy.duck.solution01.png)
+
+하늘을 나는 행위인 "FlyBehavior", 꽥꽥 소리를 내는 행위인 "QuackBehavior" 로 인터페이스로 분리했다.
+
+```java
+public abstract class Duck {
+
+    protected QuackBehavior quackBehavior;
+    protected FlyBehavior flyBehavior;
+
+    public void performQuack() {
+        quackBehavior.quack(); // 꽥꽥 행동
+    }
+
+    public void performFly() {
+        flyBehavior.fly(); // 날기 행동
+    }
+
+    // 수영하기
+    public void swim() {
+        System.out.println("Duck.swim()");
+    }
+
+    // 표시
+    public abstract void display();
+
+}
+``` 
+
+두 행위인 "FlyBehavior", "QuackBehavior"는 Duck 클래스에 멤버 변수로 추가되었으며 각 인터페이스가 수행하는 기능을 "performXXX" 메서드로 정의가 되었다.
+Duck 클래스는 나는 행위와 꽥꽥 행위를 인터페이스 위임하고 있다.
+
+![](./img/strategy.duck.solution02.png)
+
+"FlyBehavior", "QuackBehavior"는 행위에 대한 인터페이스이며 구체적인 실제 행위는 서브 클래스에 구현이 되어 있다. 
+
+```java
+public class MallardDuck extends Duck {
+
+    public MallardDuck() {
+        flyBehavior = new FlyWithWinds();
+        quackBehavior = new Quack();
+    }
+
+    @Override
+    public void display() {
+        System.out.println("(Duck > MallardDuck).display()");
+    }
+
+}
+```
+
+Duck 클래스를 상속받은 MallardDuck 클래스를 보면 생성자를 통해 행위에 대한 구체적인 정의가 이루어지고 있다.
+특정 구현에 맞춰서 프로그래밍을 하면 좋지 않지만 현재 여기서는 프로그램 실행 시에 쉽게 변경이 가능하다.
+
+```java
+public abstract class Duck {
+
+    protected QuackBehavior quackBehavior;
+    protected FlyBehavior flyBehavior;
+
+    // 설정을 위한 Setter 메서드
+    public void setQuackBehavior(QuackBehavior quackBehavior) {
+        this.quackBehavior = quackBehavior;
+    }
+
+    // 설정을 위한 Setter 메서드
+    public void setFlyBehavior(FlyBehavior flyBehavior) {
+        this.flyBehavior = flyBehavior;
+    }
+    
+    ...
+
+}
+```
+
+Duck 클래스에 Setter 메서드를 추가하였다. 
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        Duck mallard = new MallardDuck();
+        mallard.performFly();
+        // 동적으로 fly 행위를 변경
+        mallard.setFlyBehavior(new FlyNoWay());
+        mallard.performFly();
+    }
+}
+```
+
+이제 Setter 를 통해 프로그램이 실행되면서 동적으로 행위를 변경할 수 있다.
+이러한 기능을 모든 Duck 클래스를 상속받은 서브 클래스에게 동적으로 행위를 변경할 수 있다.
+
+"FlyBehavior", "QuackBehavior" 두 클래스는 Duck 클래스와 has-a 관계를 갖고 있다.
+즉, '구성'을 이용한 구조이다.
+현재 예시에서는 Duck 의 행동을 상속받는 대신, 행위에 대한 부분은 구성으로 부여받고 있디.
+구성을 활용하면 시스템 유연성을 크게 향살시킬 수 있다.
+
+# 결론
+
+애플리케이션은 시간이 지남에 따라 변화하고 성장해야 한다. 즉, 변화를 한다.
+달라지는 부분을 찾아서 나머지 코드에 영향을 주지 않도록 '캡슐화'합니다.
+그러면 코드를 변경하는 과정에서 의도치 않게 발생하는 일을 줄이면서 시스템의 유연성을 향상..
